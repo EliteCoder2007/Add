@@ -1,0 +1,136 @@
+.nolist
+#include "ti83plus.inc"
+.list
+.org userMem-2
+.db $BB,$6D
+start:
+	bcall(_ClrLCDFull)
+	ld hl, 0
+	ld (CurCol), hl
+	ld (CurRow), hl
+    ld hl, inputText1
+    bcall(_PutS)
+	bcall(_NewLine)
+	ld hl, 0
+	call numberSelection1
+	bcall(_ClrLCDFull)
+	ld hl, 0
+	ld (CurCol), hl
+	ld (CurRow), hl
+    ld hl, inputText2
+    bcall(_PutS)
+	bcall(_NewLine)
+	ld hl, 0
+	call numberSelection2
+	ld hl, (num1)
+	ld a, l
+	ld hl, (num2)
+	add a, l
+	ld h, 0
+	ld l, a
+	push hl
+	bcall(_ClrLCDFull)
+	ld hl, 0
+	ld (CurCol), hl
+	ld (CurRow), hl
+    ld hl, answer
+    bcall(_PutS)
+	bcall(_NewLine)
+	pop hl
+	bcall(_DispHL)
+	ret
+numberSelection1:
+	push hl ; Preserves HL
+	bcall(_DispHL)
+	bcall(_GetKey)
+	cp kUp
+	jr z, increase1
+	cp kDown
+	jr Z, decrease1
+	cp kEnter
+	jr Z, putHLInVarNum1
+	ld hl, 0
+	ld (CurCol), hl
+	pop hl
+	jr numberSelection1
+
+increase1:
+	ld hl, 0
+	ld (CurCol), hl
+	pop hl
+	ld a, l
+	push hl
+	ld hl, 1
+	add a, l
+	pop hl
+	ld l, a
+	jr numberSelection1
+	
+decrease1:
+	ld hl, 0
+	ld (CurCol), hl
+	pop hl
+	ld a, l
+	push hl
+	ld hl, 1
+	sub a, l
+	pop hl
+	ld l, a
+	jr numberSelection1
+putHLInVarNum1:
+	pop hl
+	ld (num1), hl
+	RET
+numberSelection2:
+	push hl ; Preserves HL
+	bcall(_DispHL)
+	bcall(_GetKey)
+	cp kUp
+	jr z, increase2
+	cp kDown
+	jr Z, decrease2
+	cp kEnter
+	jr Z, putHLInVarNum2
+	ld hl, 0
+	ld (CurCol), hl
+	pop hl
+	jr numberSelection2
+increase2:
+	ld hl, 0
+	ld (CurCol), hl
+	pop hl
+	ld a, l
+	push hl
+	ld hl, 1
+	add a, l
+	pop hl
+	ld l, a
+	jr numberSelection2
+	
+decrease2:
+	ld hl, 0
+	ld (CurCol), hl
+	pop hl
+	ld a, l
+	push hl
+	ld hl, 1
+	sub a, l
+	pop hl
+	ld l, a
+	jr numberSelection2
+putHLInVarNum2:
+	pop hl
+	ld (num2), hl
+	RET
+	
+	
+inputText1:
+    .db "INPT NUM 1: ",0
+inputText2:
+    .db "INPT NUM 2: ",0
+answer:
+	.db "ANSWER: ",0
+num1:
+	.equ $8000
+num2:
+	.equ $8002
